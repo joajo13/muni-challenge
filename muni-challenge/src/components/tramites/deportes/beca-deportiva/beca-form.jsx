@@ -1,5 +1,10 @@
+import { ErrorSpan } from "@/components/error-span";
 import { createTramite } from "@/services/tramites/createTramite";
 import { useState } from "react";
+import { BecaFormField } from "@/components/tramites/deportes/beca-deportiva/beca-from-field";
+import { tramiteSchema } from "@/schemas/tramite";
+import { toast } from "sonner";
+import { useLocation } from "wouter";
 
 export const BecaForm = () => {
   const [formData, setFormData] = useState({
@@ -8,11 +13,13 @@ export const BecaForm = () => {
     email: "",
     fechaNacimiento: "",
     deporte: "",
-    promedio: "",
+    promedio: 0,
     institucion: "",
     logros: "",
     archivo: null,
   });
+  const [, setLocation] = useLocation();
+  const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -26,6 +33,14 @@ export const BecaForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const tramiteValidation = tramiteSchema.safeParse(formData);
+
+    if (!tramiteValidation.success) {
+      const errors = tramiteValidation.error.format();
+      setErrors(errors);
+      return;
+    }
+
     const formDataToSend = new FormData();
     formDataToSend.append("nombre", formData.nombre);
     formDataToSend.append("dni", formData.dni);
@@ -36,86 +51,61 @@ export const BecaForm = () => {
     formDataToSend.append("institucion", formData.institucion);
     formDataToSend.append("logros", formData.logros);
     formDataToSend.append("archivo", formData.archivo);
-     
-    createTramite(formDataToSend);
+
+    const loadingToast = toast.loading("Enviando solicitud...");
+    const res = await createTramite(formDataToSend);
+
+    if (res.error) {
+      toast.dismiss(loadingToast);
+      toast.error(res.error);
+      return;
+    }
+    
+    toast.dismiss(loadingToast);
+    toast.success("La solicitud de la beca fue creada correctamente.");
+    setLocation("/tramites");
   };
 
   return (
     <form className="space-y-4 py-4" onSubmit={handleSubmit}>
-      <div>
-        <label
-          htmlFor="nombre"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Nombre completo
-        </label>
-        <input
-          type="text"
-          id="nombre"
-          name="nombre"
-          required
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none"
-          placeholder="Ingrese su nombre completo"
-          value={formData.nombre}
-          onChange={handleChange}
-        />
-      </div>
+      <BecaFormField
+        label="Nombre completo"
+        id="nombre"
+        value={formData.nombre}
+        onChange={handleChange}
+        error={errors?.nombre?._errors[0]}
+        placeholder="Ingrese su nombre completo"
+        required
+      />
 
-      <div>
-        <label
-          htmlFor="dni"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          DNI
-        </label>
-        <input
-          type="text"
-          id="dni"
-          name="dni"
-          required
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none"
-          placeholder="Ingrese su DNI"
-          value={formData.dni}
-          onChange={handleChange}
-        />
-      </div>
-
-      <div>
-        <label
-          htmlFor="email"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Correo electrónico
-        </label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          required
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none"
-          placeholder="correo@ejemplo.com"
-          value={formData.email}
-          onChange={handleChange}
-        />
-      </div>
-
-      <div>
-        <label
-          htmlFor="fechaNacimiento"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Fecha de nacimiento
-        </label>
-        <input
-          type="date"
-          id="fechaNacimiento"
-          name="fechaNacimiento"
-          required
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none"
-          value={formData.fechaNacimiento}
-          onChange={handleChange}
-        />
-      </div>
+      <BecaFormField
+        label="DNI"
+        id="dni"
+        value={formData.dni}
+        onChange={handleChange}
+        error={errors?.dni?._errors[0]}
+        placeholder="Ingrese su DNI"
+        required
+      />
+      <BecaFormField
+        label="Correo electrónico"
+        id="email"
+        type="email"
+        value={formData.email}
+        onChange={handleChange}
+        error={errors?.email?._errors[0]}
+        placeholder="correo@ejemplo.com"
+        required
+      />
+      <BecaFormField
+        label="Fecha de nacimiento"
+        id="fechaNacimiento"
+        type="date"
+        value={formData.fechaNacimiento}
+        onChange={handleChange}
+        error={errors?.fechaNacimiento?._errors[0]}
+        required
+      />
 
       <div>
         <label
@@ -127,10 +117,10 @@ export const BecaForm = () => {
         <select
           id="deporte"
           name="deporte"
-          required
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none"
           value={formData.deporte}
           onChange={handleChange}
+          required
         >
           <option value="">Seleccione su deporte</option>
           <option value="futbol">Fútbol</option>
@@ -139,49 +129,29 @@ export const BecaForm = () => {
           <option value="natacion">Natación</option>
           <option value="tenis">Tenis</option>
         </select>
+        <ErrorSpan error={errors?.deporte?._errors[0]} />
       </div>
 
-      <div>
-        <label
-          htmlFor="promedio"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Promedio académico
-        </label>
-        <input
-          type="number"
-          id="promedio"
-          name="promedio"
-          step="0.01"
-          min="0"
-          max="10"
-          required
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none"
-          placeholder="Ej: 8.5"
-          value={formData.promedio}
-          onChange={handleChange}
-        />
-      </div>
-
-      <div>
-        <label
-          htmlFor="institucion"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Institución educativa actual
-        </label>
-        <input
-          type="text"
-          id="institucion"
-          name="institucion"
-          required
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none"
-          placeholder="Nombre de su escuela o universidad"
-          value={formData.institucion}
-          onChange={handleChange}
-        />
-      </div>
-
+      <BecaFormField
+        label="Promedio académico"
+        id="promedio"
+        type="number"
+        step="0.1"
+        value={formData.promedio}
+        onChange={handleChange}
+        error={errors?.promedio?._errors[0]}
+        placeholder="Ej: 8.5"
+        required
+      />
+      <BecaFormField
+        label="Institución educativa actual"
+        id="institucion"
+        value={formData.institucion}
+        onChange={handleChange}
+        error={errors?.institucion?._errors[0]}
+        placeholder="Nombre de su escuela o universidad"
+        required
+      />
       <div>
         <label
           htmlFor="logros"
@@ -198,6 +168,7 @@ export const BecaForm = () => {
           value={formData.logros}
           onChange={handleChange}
         ></textarea>
+        <ErrorSpan error={errors?.logros?._errors[0]} />
       </div>
 
       <div>
@@ -211,10 +182,11 @@ export const BecaForm = () => {
           type="file"
           id="archivo"
           name="archivo"
-          accept="video/*,application/pdf"
+          accept=".jpg,.jpeg,.mp4,.png"
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none"
           onChange={handleChange}
         />
+        <ErrorSpan error={errors?.archivo?._errors[0]} />
       </div>
 
       <button

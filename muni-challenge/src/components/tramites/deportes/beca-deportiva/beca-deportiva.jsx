@@ -4,18 +4,9 @@ import { PageHeader } from "@/components/page-header";
 import { BecaForm } from "@/components/tramites/deportes/beca-deportiva/beca-form";
 
 const breadcrumbItems = [
-  {
-    name: "Trámites",
-    url: "/tramites",
-  },
-  {
-    name: "Deportes",
-    url: "/tramites/deportes",
-  },
-  {
-    name: "Beca deportiva",
-    url: "/tramites/deportes/beca",
-  },
+  { name: "Trámites", path: "tramites" },
+  { name: "Deportes", path: "tramites" },
+  { name: "Beca deportiva", path: "tramites/deportes/beca" },
 ];
 
 export const BecaDeportiva = () => {

@@ -3,8 +3,9 @@ import { AuthenticatedAvatar } from "./authenticated-avatar";
 import { UnauthenticatedAvatarDropdown } from "./unauthenticated-avatar-dropdown";
 
 export const Auth = () => {
-  const { isAuthenticated } = useSessionStore((state) => state);
-
+  const state = useSessionStore((state) => state);
+  const { isAuthenticated } = state
+  console.log(state)
   return (
     <div>
       {isAuthenticated ? <AuthenticatedAvatar /> : <UnauthenticatedAvatarDropdown />}

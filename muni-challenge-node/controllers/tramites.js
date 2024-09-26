@@ -21,6 +21,15 @@ export const createTramite = async (req, res) => {
         } = req.body;
         const archivo = req.file;
 
+        if (!archivo) {
+            return res.status(400).json({ error: "El archivo es requerido" });
+        }
+
+        if (archivo.mimetype !== 'image/jpg' && archivo.mimetype !== 'image/jpeg' && archivo.mimetype !== 'video/mp4') {
+            deleteFileFromServer(archivo);
+            return res.status(400).json({ error: "El archivo debe ser una imagen o un video." });
+        }
+
         // Valida los datos del trámite
         const tramiteValidation = validateTramite({
             nombre,
@@ -36,7 +45,7 @@ export const createTramite = async (req, res) => {
         // Si hay un error en la validación, devuelve error 400
         if (tramiteValidation.error) {
             deleteFileFromServer(archivo);
-            return res.status(400).json({ message: tramiteValidation.error });
+            return res.status(400).json({ error: tramiteValidation.error });
         }
 
         // Busca al ciudadano por su DNI
@@ -79,13 +88,13 @@ export const createTramite = async (req, res) => {
             promedio,
             logros,
             institucion,
-            comprobanteImagePath: archivo.filename
+            comprobanteImagePath: process.env.DRIVE_HQ_HOST + archivo.filename,
         });
 
         // Devuelve el trámite creado
         res.status(201).json(tramite);
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ error: 'Ha ocurrido un error' });
     }
 };

@@ -102,8 +102,8 @@ const tramites = [
 ];
 
 const breadcrumbItems = [
-  { name: "Inicio", path: "/" },
-  { name: "Trámites", path: "/tramites" },
+  { name: "Inicio", path: "" },
+  { name: "Trámites", path: "tramites" },
 ];
 
 export const Tramites = () => {

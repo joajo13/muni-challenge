@@ -17,13 +17,13 @@ export const signUp = async (req, res) => {
         const usernameAlreadyExists = await verifyUsernameAlreadyExists(username);
 
         // Si el nombre de usuario ya existe, devuelve un error
-        if (usernameAlreadyExists) return res.status(400).json({ message: "El usuario no está disponible." });
+        if (usernameAlreadyExists) return res.status(400).json({ error: "El usuario no está disponible." });
 
         // Valida el nombre de usuario
         const usernameValidations = validateUsername(username);
 
         // Si hay errores de validación, devuelve un error
-        if (usernameValidations) return res.status(400).json({ message: usernameValidations });
+        if (usernameValidations) return res.status(400).json({ error: usernameValidations });
 
         // Crea un nuevo usuario
         const user = await User.create({
@@ -36,7 +36,7 @@ export const signUp = async (req, res) => {
         res.status(201).json(user);
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: "Ha ocurrido un error." });
+        res.status(500).json({ error: "Ha ocurrido un error." });
     }
 }
 
@@ -48,10 +48,10 @@ export const signIn = async (req, res) => {
         const user = await User.findOne({ where: { username } });
 
         // Si el usuario no existe, devuelve error
-        if (!user) return res.status(404).json({ message: "Usuario no encontrado." });
+        if (!user) return res.status(404).json({ error: "Usuario no encontrado." });
 
         // Verifica si la contraseña es correcta
-        if (user.password !== password) return res.status(401).json({ message: "Contraseña incorrecta." });
+        if (user.password !== password) return res.status(401).json({ error: "Contraseña incorrecta." });
 
         // Genera un token JWT
         const token = jwt.sign({ username }, secretKey, { expiresIn: "3h" });
@@ -60,6 +60,6 @@ export const signIn = async (req, res) => {
         res.status(200).json({ token, user });
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: "Ha ocurrido un error." });
+        res.status(500).json({ error: "Ha ocurrido un error." });
     }
 }

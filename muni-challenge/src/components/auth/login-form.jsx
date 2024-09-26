@@ -33,7 +33,7 @@ export const LoginForm = () => {
 
       toast.success("Signed in successfully");
 
-      setUserSession(user, token);
+      await setUserSession(user, token);
 
       navigate("/dashboard");
     } catch (error) {

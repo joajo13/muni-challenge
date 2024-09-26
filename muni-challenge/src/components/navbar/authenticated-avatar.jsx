@@ -45,14 +45,6 @@ export const AuthenticatedAvatar = () => {
           )}
         >
           <Link
-            to="#"
-            className={twMerge(
-              "block px-4 py-2 text-gray-800 text-sm hover:bg-gray-100"
-            )}
-          >
-            Profile
-          </Link>
-          <Link
             to="/dashboard"
             className={twMerge(
               "block px-4 py-2 text-gray-800 text-sm hover:bg-gray-100 w-full text-left"
