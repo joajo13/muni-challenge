@@ -6,12 +6,6 @@ export const verifyToken = (req, res, next) => {
     const header = req.header("Authorization") || "";
     const token = header.split(" ")[1];
 
-    console.log({
-        spltted: header.split(" "),
-        header,
-        token
-    })
-
     if (!jwtSecret) {
         throw new Error("SECRET_KEY environment variable is not set");
     }

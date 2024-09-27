@@ -20,6 +20,8 @@ export const create = async (req, res) => {
         } = req.body;
         const archivo = req.file;
 
+        console.log(req.body)
+
         if (!archivo) {
             return res.status(400).json({ error: "El archivo es requerido" });
         }
@@ -39,6 +41,7 @@ export const create = async (req, res) => {
             promedio,
             logros,
             institucion,
+            logros
         });
 
         // Si hay un error en la validación, devuelve error 400
@@ -57,7 +60,7 @@ export const create = async (req, res) => {
                 nombre,
                 dni,
                 email,
-                fechaNacimiento,
+                birthday: fechaNacimiento,
             },
                 {
                     returning: true,
@@ -70,7 +73,7 @@ export const create = async (req, res) => {
             await Ciudadano.update({
                 nombre,
                 email,
-                fechaNacimiento,
+                birthday: fechaNacimiento,
             }, { where: { dni } });
         }
 
@@ -114,6 +117,7 @@ export const getAll = async (req, res) => {
             const { ciudadano, ...tramiteData } = tramite.toJSON();
             return {
                 ...tramiteData,
+                fechaNacimiento: ciudadano.birthday,
                 nombre: ciudadano.nombre,
                 dni: ciudadano.dni,
                 email: ciudadano.email,
@@ -164,6 +168,14 @@ export const updateComment = async (req, res) => {
         const { comment } = req.body;
         const user = req.user;
 
+        console.log(req.body)
+
+        console.log({
+            id,
+            comment,
+            user,
+        })
+
         const tramite = await Tramite.findByPk(id);
 
         if (!tramite) {
@@ -185,6 +197,8 @@ export const updateStatus = async (req, res) => {
         const { status } = req.body;
         const user = req.user;
 
+        console.log(req.body)
+
         const tramite = await Tramite.findByPk(id);
 
         if (!tramite) {
@@ -196,6 +210,8 @@ export const updateStatus = async (req, res) => {
         }
 
         await tramite.update({ status, statusChangedBy: user.id });
+
+        res.status(200).json(tramite);
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: 'Ha ocurrido un error' });

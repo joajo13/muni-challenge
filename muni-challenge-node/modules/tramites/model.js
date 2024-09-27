@@ -39,6 +39,14 @@ const Tramite = db.define("tramite", {
         type: DataTypes.INTEGER,
         allowNull: true
     },
+    institucion: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    logros: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
 });
 
 Tramite.belongsTo(Ciudadano, { as: "ciudadano", foreignKey: "ciudadanoId" });

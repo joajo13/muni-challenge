@@ -1,93 +1,58 @@
 import { CommentModal } from "@/components/dashboard/comment-modal";
+import { DetailModal } from "@/components/dashboard/detail-modal";
 import { useState } from "react";
-import {
-  HiOutlineChatBubbleLeftEllipsis,
-  HiOutlineEllipsisHorizontal,
-  HiOutlineEye,
-  HiOutlinePencilSquare,
-} from "react-icons/hi2";
+import { HiOutlineChatBubbleLeftEllipsis, HiOutlineEye } from "react-icons/hi2";
 import { twMerge } from "tailwind-merge";
 
 export const ActionCell = ({ data }) => {
-  const [isOpen, setIsOpen] = useState(false);
   const [modalCommentIsOpen, setIsModalCommentOpen] = useState(false);
+  const [modalDetailIsOpen, setIsModalDetailOpen] = useState(false);
 
-  const handleStatusModalClose = () => {
+  const handleDetailModalClose = () => {
+    setIsModalDetailOpen(false);
+  };
+
+  const handleCommentModalClose = () => {
     setIsModalCommentOpen(false);
   };
 
   return (
-    <td className="text-center relative py-2">
-      {/* Backdrop */}
-      <div
-        className={twMerge(
-          "fixed inset-0 bg-transparent z-10 h-screen w-screen",
-          isOpen ? "block" : "hidden"
-        )}
-        onClick={() => setIsOpen(false)}
-      ></div>
+    <td className="text-center border-t">
+      <CommentModal
+        isOpen={modalCommentIsOpen}
+        handleClose={handleCommentModalClose}
+        comment={data.comment}
+        idTramite={data.id}
+      />
 
-      <div className="relative z-40">
-        {/* Trigger */}
+      <DetailModal
+        isOpen={modalDetailIsOpen}
+        handleClose={handleDetailModalClose}
+        data={data}
+      />
+
+      <div className="w-full justify-center items-center gap-1 flex">
         <button
           className={twMerge(
-            "rounded-md group px-2 py-2 hover:bg-gray-100 transition-colors duration-200"
+            "p-2 text-green-600 hover:bg-green-600/10 rounded-md"
           )}
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={() => {
+            setIsModalCommentOpen(true);
+          }}
         >
-          <HiOutlineEllipsisHorizontal className="text-xl" />
+          <HiOutlineChatBubbleLeftEllipsis className="text-xl" />
         </button>
 
-        {/* Dropdown */}
-        <div
+        <button
           className={twMerge(
-            "bg-white rounded-md border absolute top-8 right-6 min-w-36 flex flex-col z-50",
-            isOpen ? "block" : "hidden"
+            "p-2 hover:bg-cyan-600/10 rounded-md text-cyan-600"
           )}
+          onClick={() => {
+            setIsModalDetailOpen(true);
+          }}
         >
-          <button
-            className={twMerge(
-              "flex px-4 py-2 text-gray-800 text-sm hover:bg-gray-100 w-full text-left text-nowrap justify-between items-center gap-4"
-            )}
-            onClick={() => {
-              setIsOpen(false);
-            }}
-          >
-            Cambiar estado
-            <HiOutlinePencilSquare className="text-xl" />
-          </button>
-
-          <button
-            className={twMerge(
-              "flex px-4 py-2 text-gray-800 text-sm hover:bg-gray-100 w-full text-left text-nowrap justify-between items-center gap-4"
-            )}
-            onClick={() => {
-              setIsModalCommentOpen(true);
-            }}
-          >
-            Agregar comentario
-            <HiOutlineChatBubbleLeftEllipsis className="text-xl" />
-          </button>
-
-          <CommentModal
-            currentStatus={data.status}
-            isOpen={modalCommentIsOpen}
-            handleClose={handleStatusModalClose}
-          />
-
-          <button
-            className={twMerge(
-              "flex px-4 py-2 text-gray-800 text-sm hover:bg-gray-100 w-full text-left text-nowrap justify-between items-center gap-4"
-            )}
-            onClick={() => {
-              setIsOpen(false);
-              // Add your delete action here
-            }}
-          >
-            Ver
-            <HiOutlineEye className="text-xl" />
-          </button>
-        </div>
+          <HiOutlineEye className="text-xl" />
+        </button>
       </div>
     </td>
   );

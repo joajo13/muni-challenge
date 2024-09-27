@@ -1,5 +1,5 @@
 import { useLocation } from "wouter";
-import { Auth } from "./auth";
+import { AuthAvatar } from "./auth-avatar";
 import { Brand } from "./brand";
 import { Links } from "./links";
 import { twMerge } from "tailwind-merge";
@@ -20,7 +20,7 @@ export const Navbar = () => {
       <Links />
 
       {/* Auth */}
-      <Auth />
+      <AuthAvatar />
     </nav>
   );
 };

@@ -20,6 +20,10 @@ const Ciudadano = db.define("ciudadano", {
         allowNull: false,
         isEmail: true
     },
+    birthday: {
+        type: DataTypes.DATEONLY,
+        allowNull: true
+    }
 });
 
 export default Ciudadano;
