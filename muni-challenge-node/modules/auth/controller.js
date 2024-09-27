@@ -1,6 +1,7 @@
 import User from "../users/model.js";
 import { validateUsername } from "../../utils/user/validateUsername.js";
 import { verifyUsernameAlreadyExists } from "../../utils/user/verifyUsernameAlreadyExists.js";
+import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 export const signUp = async (req, res) => {
@@ -19,11 +20,13 @@ export const signUp = async (req, res) => {
         // Si hay errores de validación, devuelve un error
         if (usernameValidations) return res.status(400).json({ error: usernameValidations });
 
+        const hashedPassword = await bcrypt.hash(password, 13);
+
         // Crea un nuevo usuario
         const user = await User.create({
             username,
             email,
-            password
+            password: hashedPassword
         });
 
         // Responde con el usuario creado
@@ -44,8 +47,10 @@ export const signIn = async (req, res) => {
         // Si el usuario no existe, devuelve error
         if (!user) return res.status(404).json({ error: "Usuario no encontrado." });
 
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+
         // Verifica si la contraseña es correcta
-        if (user.password !== password) return res.status(401).json({ error: "Contraseña incorrecta." });
+        if (!isPasswordValid) return res.status(401).json({ error: "Contraseña incorrecta." });
 
         // Genera un token JWT
         const token = jwt.sign({user}, process.env.JWT_SECRET, { expiresIn: "3h" });
