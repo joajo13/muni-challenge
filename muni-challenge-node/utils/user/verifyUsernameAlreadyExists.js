@@ -1,5 +1,4 @@
-import db from "../../models/index.js";
-const User = db.users;
+import User from "../../modules/users/model.js";
 
 export const verifyUsernameAlreadyExists = async (username) => {
     const user = await User.findOne({

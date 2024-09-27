@@ -1,12 +1,11 @@
-import db from "../models/index.js";
-import { client } from "../config/ftpConfig.js";
-import { validateTramite } from "../utils/tramites/validateTramite.js";
-import { deleteFileFromServer } from "../utils/tramites/deleteFileFromServer.js";
+import { client } from "../../config/ftpConfig.js";
+import { validateTramite } from "../../utils/tramites/validateTramite.js";
+import { deleteFileFromServer } from "../../utils/tramites/deleteFileFromServer.js";
+import Tramite from "./model.js";
+import Ciudadano from "../ciudadanos/model.js";
+import { STATUS } from "../../constants/STATUS.js";
 
-const Tramite = db.tramites;
-const Ciudadano = db.ciudadanos;
-
-export const createTramite = async (req, res) => {
+export const create = async (req, res) => {
     try {
         // Extrae los datos del cuerpo de la solicitud
         const {
@@ -25,7 +24,7 @@ export const createTramite = async (req, res) => {
             return res.status(400).json({ error: "El archivo es requerido" });
         }
 
-        if (archivo.mimetype !== 'image/jpg' && archivo.mimetype !== 'image/jpeg' && archivo.mimetype !== 'video/mp4') {
+        if (archivo.mimetype !== 'image/jpg' && archivo.mimetype !== 'image/jpeg' && archivo.mimetype !== 'video/mp4' && archivo.mimetype !== 'image/png') {
             deleteFileFromServer(archivo);
             return res.status(400).json({ error: "El archivo debe ser una imagen o un video." });
         }
@@ -95,6 +94,7 @@ export const createTramite = async (req, res) => {
         res.status(201).json(tramite);
     } catch (error) {
         console.log(error);
+        deleteFileFromServer(req.file);
         res.status(500).json({ error: 'Ha ocurrido un error' });
     }
 };
@@ -121,6 +121,81 @@ export const getAll = async (req, res) => {
         });
 
         res.status(200).json(transformedTramites);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Ha ocurrido un error' });
+    }
+}
+
+export const getById = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const tramite = await Tramite.findByPk(id, {
+            include: [
+                {
+                    model: Ciudadano,
+                    as: 'ciudadano',
+                },
+            ],
+        });
+
+        if (!tramite) {
+            return res.status(404).json({ error: 'Trámite no encontrado' });
+        }
+
+        const { ciudadano, ...tramiteData } = tramite.toJSON();
+
+        res.status(200).json({
+            ...tramiteData,
+            nombre: ciudadano.nombre,
+            dni: ciudadano.dni,
+            email: ciudadano.email,
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Ha ocurrido un error' });
+    }
+}
+
+export const updateComment = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { comment } = req.body;
+        const user = req.user;
+
+        const tramite = await Tramite.findByPk(id);
+
+        if (!tramite) {
+            return res.status(404).json({ error: 'Trámite no encontrado' });
+        }
+
+        await tramite.update({ comment, commentBy: user.id });
+
+        res.status(200).json(tramite);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Ha ocurrido un error' });
+    }
+}
+
+export const updateStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+        const user = req.user;
+
+        const tramite = await Tramite.findByPk(id);
+
+        if (!tramite) {
+            return res.status(404).json({ error: 'Trámite no encontrado' });
+        }
+
+        if (!Object.values(STATUS).includes(status)) {
+            return res.status(400).json({ error: 'Estado inválido' });
+        }
+
+        await tramite.update({ status, statusChangedBy: user.id });
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: 'Ha ocurrido un error' });

@@ -1,13 +1,7 @@
-import db from "../models/index.js";
-import { validateUsername } from "../utils/user/validateUsername.js";
-import { verifyUsernameAlreadyExists } from "../utils/user/verifyUsernameAlreadyExists.js";
+import User from "../users/model.js";
+import { validateUsername } from "../../utils/user/validateUsername.js";
+import { verifyUsernameAlreadyExists } from "../../utils/user/verifyUsernameAlreadyExists.js";
 import jwt from "jsonwebtoken";
-
-// Clave secreta para firmar el token JWT
-const secretKey = process.env.SECRET_KEY;
-
-// Modelo de usuario de la base de datos
-const User = db.users;
 
 export const signUp = async (req, res) => {
     try {
@@ -54,7 +48,7 @@ export const signIn = async (req, res) => {
         if (user.password !== password) return res.status(401).json({ error: "Contraseña incorrecta." });
 
         // Genera un token JWT
-        const token = jwt.sign({ username }, secretKey, { expiresIn: "3h" });
+        const token = jwt.sign({user}, process.env.JWT_SECRET, { expiresIn: "3h" });
 
         // Responde con el token y los datos del usuario
         res.status(200).json({ token, user });
