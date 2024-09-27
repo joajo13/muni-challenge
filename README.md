@@ -48,6 +48,6 @@ Una vez hayamos ingresado, ir a My Storage, seleccionar el checkbox de la carpet
 De esta manera se siren estaticamente durante un periodo de tiempo delimitado.
 
 # Dashboard
-Correr el servidor se crea un usuario admin con las credenciales:
+Al correr el servidor se crea un usuario admin con las credenciales:
 usuario: admin
 password: admin
