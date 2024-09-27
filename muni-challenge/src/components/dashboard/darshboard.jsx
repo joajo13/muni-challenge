@@ -34,7 +34,9 @@ export const Dashboard = () => {
   }, [token, refetch]);
 
   return (
-    <PageContainer>
+    <PageContainer
+      className="min-h-screen"
+    >
       <Breadcrumb items={breadcrumbItems} />
       <PageHeader title="Dashboard" />
 
