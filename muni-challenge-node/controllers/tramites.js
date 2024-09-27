@@ -98,3 +98,31 @@ export const createTramite = async (req, res) => {
         res.status(500).json({ error: 'Ha ocurrido un error' });
     }
 };
+
+export const getAll = async (req, res) => {
+    try {
+        const tramites = await Tramite.findAll({
+            include: [
+                {
+                    model: Ciudadano,
+                    as: 'ciudadano',
+                },
+            ],
+        });
+
+        const transformedTramites = tramites.map(tramite => {
+            const { ciudadano, ...tramiteData } = tramite.toJSON();
+            return {
+                ...tramiteData,
+                nombre: ciudadano.nombre,
+                dni: ciudadano.dni,
+                email: ciudadano.email,
+            };
+        });
+
+        res.status(200).json(transformedTramites);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Ha ocurrido un error' });
+    }
+}

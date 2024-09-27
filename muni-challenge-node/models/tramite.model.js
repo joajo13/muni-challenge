@@ -35,6 +35,10 @@ const Tramite = (sequelize, DataTypes) => {
         comprobanteImagePath: {
             type: DataTypes.STRING,
             allowNull: true
+        },
+        comment: {
+            type: DataTypes.STRING,
+            allowNull: true
         }
     });
 

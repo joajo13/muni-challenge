@@ -36,6 +36,10 @@ db.users = User(sequelize, Sequelize);
 db.ciudadanos = Ciudadano(sequelize, Sequelize);
 db.tramites = Tramite(sequelize, Sequelize);
 
+// Define associations
+db.ciudadanos.hasMany(db.tramites, { as: 'tramites', foreignKey: 'ciudadanoId' });
+db.tramites.belongsTo(db.ciudadanos, { as: 'ciudadano', foreignKey: 'ciudadanoId' });
+
 db.users.sync({ force: false }).then(() => {
     console.log("Sync db successfully.");
 });
