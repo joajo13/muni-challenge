@@ -1,7 +1,7 @@
 
 const { VITE_API_URL: baseUrl } = import.meta.env;
 
-export const createTramite = async (formData) => {
+export const create = async (formData) => {
     try {
         console.log(Object.fromEntries(formData));
 

@@ -1,5 +1,5 @@
 import { ErrorSpan } from "@/components/error-span";
-import { createTramite } from "@/services/tramites/createTramite";
+import { create } from "@/services/tramites/create";
 import { useState } from "react";
 import { BecaFormField } from "@/components/tramites/deportes/beca-deportiva/beca-from-field";
 import { tramiteSchema } from "@/schemas/tramite";
@@ -53,7 +53,7 @@ export const BecaForm = () => {
     formDataToSend.append("archivo", formData.archivo);
 
     const loadingToast = toast.loading("Enviando solicitud...");
-    const res = await createTramite(formDataToSend);
+    const res = await create(formDataToSend);
 
     if (res.error) {
       toast.dismiss(loadingToast);

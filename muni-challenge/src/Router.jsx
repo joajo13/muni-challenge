@@ -9,6 +9,8 @@ import { BecaDeportiva } from "@/components/tramites/deportes/beca-deportiva/bec
 const AdminRoute = ({ children }) => {
   const { user } = useSessionStore((state) => state);
 
+  console.log(user);
+
   return user?.role === ROLES.ADMIN ? children : <Redirect to="/tramites" />;
 };
 
