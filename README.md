@@ -51,3 +51,6 @@ De esta manera se siren estaticamente durante un periodo de tiempo delimitado.
 Al correr el servidor se crea un usuario admin con las credenciales:
 usuario: admin
 password: admin
+
+# Video
+https://youtu.be/r7HF_IiPhR4
